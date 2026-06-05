@@ -31,3 +31,29 @@ jobs:
       - name: Build production Docker image
         run: docker build --target production --build-arg NAME=Alina -t python-app:prod .
 
+  # create a job with the name 'test' that runs tests only when the build job completed successfully
+  test:
+    needs: build # wait for build job to complete before running
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./python-app
+
+    steps:
+    # checkout the repository to the Linux Virtual Machine
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        
+      # set up Python on the VM
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      
+      # install dependencies including pytest
+      - name: Install dependencies
+        run: pip install ".[dev]"
+
+      # run tests on the VM
+      - name: Run tests
+        run: pytest tests/test_app.py
