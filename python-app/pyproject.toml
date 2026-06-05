@@ -11,6 +11,12 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 
+# during image building, python's import system looks for app.py inside tests/ folder
+# because of the "from app import build_greeting, prepare_request" statement in test_app.py.
+# The configuration below tells python to look for app.py also in the root folder (/app)
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
