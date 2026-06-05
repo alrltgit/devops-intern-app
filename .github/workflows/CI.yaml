@@ -1,0 +1,33 @@
+# the name of the pipeline
+name: CI
+
+# create events that will trigger the pipeline
+on:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+# create a job with the name 'build' (a set of steps that will run on the Virtual machine)
+jobs:
+  build:
+    runs-on: ubuntu-latest # specify the OS of the Virtual Machine provided by GitHub
+    defaults:
+      run:
+        working-directory: ./python-app # navigate to the folder where all the commands will run
+
+    # define steps for the job to do
+    steps:
+      # checkout the whole repository to the Linux Virtual Machine using predefined GitHub action
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # build development image - tests run automatically at this step
+      - name: Build development Docker image
+        run: docker build --target development --build-arg NAME=Alina -t python-app:dev .
+
+      # build production image - runs only if development build and tests passed
+      - name: Build production Docker image
+        run: docker build --target production --build-arg NAME=Alina -t python-app:prod .
+
